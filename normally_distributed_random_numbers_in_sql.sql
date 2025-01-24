@@ -36,14 +36,14 @@ SELECT * FROM NORMAL_RNG;
 -- Generate random numbers based on the Irwin-Hall approximation: https://en.wikipedia.org/wiki/Irwin%E2%80%93Hall_distribution
 WITH NORMAL_RNG AS (
     SELECT 
-        @mu + @sigma * (
+        (
             RAND(CHECKSUM(NEWID())) + RAND(CHECKSUM(NEWID())) + RAND(CHECKSUM(NEWID())) + RAND(CHECKSUM(NEWID())) +
             RAND(CHECKSUM(NEWID())) + RAND(CHECKSUM(NEWID())) + RAND(CHECKSUM(NEWID())) + RAND(CHECKSUM(NEWID())) +
             RAND(CHECKSUM(NEWID())) + RAND(CHECKSUM(NEWID())) + RAND(CHECKSUM(NEWID())) + RAND(CHECKSUM(NEWID()))
          - 6) AS RandomSample
     FROM (
-        SELECT TOP (@Max - @Min + 1) 
-            @Min - 1 + ROW_NUMBER() OVER (ORDER BY t1.number) AS N
+        SELECT TOP (@NumSamples) 
+            ROW_NUMBER() OVER (ORDER BY t1.number) AS N
         FROM master..spt_values t1
         CROSS JOIN master..spt_values t2
     ) AS NumberSource
